@@ -1,0 +1,26 @@
+{
+  "private": "true",
+  "name": "virtual-keyboard",
+  "version": "0.1.0",
+  "description": "Virtual keyboard",
+  "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Ilya Fakhrutdinov",
+    "email": "ilyaf4hr@gmail.com",
+    "url": "https://github.com/f4hr"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.39.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2"
+  }
+}
