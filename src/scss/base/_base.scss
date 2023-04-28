@@ -2,8 +2,12 @@
 
 :root {
   --clr-transparent: #{vars.$clr-transparent};
+  --clr-accent: #{vars.$clr-accent};
   --clr-bgc-primary: #{vars.$clr-bgc-primary};
   --clr-text-primary: #{vars.$clr-text-primary};
+  --clr-text-primary-light: #{vars.$clr-text-primary-light};
+  --clr-shadow-primary: #{vars.$clr-shadow-primary};
+  --clr-shadow-accent: #{vars.$clr-shadow-accent};
 }
 
 html {

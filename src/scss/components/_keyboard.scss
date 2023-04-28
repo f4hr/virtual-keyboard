@@ -1,7 +1,7 @@
-$clr-bgc-container: #ebebeb;
-$clr-bgc-item: #f5f5f5;
-$clr-bgc-item-hover: #ebebeb;
-$clr-border: #bdbdbd;
+$clr-bgc-container: #2e2e2e;
+$clr-bgc-item: #3a3a3a;
+$clr-bgc-item-hover: #444444;
+$clr-border: #505050;
 
 $border-radius: 0.25rem;
 
@@ -17,7 +17,7 @@ $key-sizes: 2, 3, 4, 5, 13;
   border: 1px solid $clr-border;
   border-radius: $border-radius;
   background-color: $clr-bgc-container;
-  box-shadow: 3px 3px 5px 0 rgb(0 0 0 / 15%);
+  box-shadow: 5px 5px 10px 5px var(--clr-shadow-primary);
 }
 
 .keyboard__item {
@@ -42,13 +42,21 @@ $key-sizes: 2, 3, 4, 5, 13;
   font-size: calc(100% + 2px);
   line-height: 1;
   text-align: center;
-  color: var(--clr-text-primary);
+  color: var(--clr-text-primary-light);
   background-color: $clr-bgc-item;
-  box-shadow: 1px 1px 4px 0 rgb(0 0 0 / 20%);
-  transition: background-color 0.2s ease-in-out;
+  box-shadow: 1px 1px 4px 0 var(--clr-shadow-primary);
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
+  outline: none;
 
   &:hover {
-    background-color: #fff;
+    background-color: $clr-bgc-item-hover;
+  }
+
+  &--active {
+    border-color: var(--clr-accent);
+    background-color: $clr-bgc-item-hover;
+    box-shadow: 0 0 3px 2px var(--clr-shadow-accent);
+    text-shadow: 0 0 4px var(--clr-accent);
   }
 }
