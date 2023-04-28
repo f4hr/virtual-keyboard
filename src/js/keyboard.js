@@ -1,11 +1,21 @@
-import { keyOrder, keySizes, validKeys } from './constants.js';
+import {
+  keyOrder, keySizes, wordKeys, validKeys,
+} from './constants.js';
 import { enLayout } from './layouts/en.js';
+
+const CAPS_CODE = 'CapsLock';
 
 export class Keyboard {
   constructor(container) {
     this.container = container;
     this.keyboard = navigator.keyboard;
+    this.keyboardState = keyOrder.reduce((obj, curr) => (
+      { ...obj, [curr]: { pressed: false } }
+    ), {});
     this.cursorPos = 0;
+    this.layout = enLayout;
+    this.mouseKey = null;
+    this.isCaps = false;
   }
 
   init() {
@@ -37,7 +47,7 @@ export class Keyboard {
       btn.type = 'button';
       btn.dataset.code = keyCode;
       btn.classList.add('keyboard__btn');
-      btn.textContent = enLayout[keyCode];
+      btn.textContent = this.layout[keyCode].default;
 
       keyEl.append(btn);
       keyList.append(keyEl);
@@ -50,16 +60,38 @@ export class Keyboard {
     output.focus();
   }
 
-  handleKeyEvent(e) {
-    this.keyElements[e.code].classList.add('keyboard__btn--active');
+  getKeyValue(keyCode) {
+    const isShift = this.keyboardState.ShiftLeft.pressed || this.keyboardState.ShiftRight.pressed;
 
+    if (!wordKeys.includes(keyCode)) {
+      const value = this.layout[keyCode][isShift ? 'alt' : 'default'];
+      return value || this.layout[keyCode].default;
+    }
+    const isAlt = (this.isCaps && !isShift) || (!this.isCaps && isShift);
+    const value = this.layout[keyCode][isAlt ? 'alt' : 'default'];
+    return value || this.layout[keyCode].default;
+  }
+
+  update() {
+    keyOrder.forEach((keyCode) => {
+      const isPressed = this.keyboardState[keyCode].pressed;
+      this.keyElements[keyCode].classList[isPressed ? 'add' : 'remove']('keyboard__btn--active');
+      this.keyElements[keyCode].textContent = this.getKeyValue(keyCode);
+    });
+    this.keyElements[CAPS_CODE].classList[this.isCaps ? 'add' : 'remove']('keyboard__btn--active');
+  }
+
+  handleKeyDownEvent(e) {
+    if (e.code === CAPS_CODE) {
+      this.isCaps = !this.isCaps;
+    }
     if (validKeys.includes(e.code)) {
       return;
     }
 
     this.cursorPos = this.output.selectionEnd;
     this.output.setRangeText(
-      e.key,
+      this.getKeyValue(e.code),
       this.cursorPos,
       this.cursorPos,
       'end',
@@ -77,7 +109,6 @@ export class Keyboard {
       }
 
       e.preventDefault();
-      e.target.classList.add('keyboard__btn--active');
 
       this.keyboard.getLayoutMap().then((keyboardLayoutMap) => {
         this.output.focus();
@@ -87,12 +118,20 @@ export class Keyboard {
           code,
         });
 
-        this.handleKeyEvent(keyboardEvent);
+        this.keyboardState[code].pressed = true;
+        this.mouseKey = code;
+        this.handleKeyDownEvent(keyboardEvent);
+        this.update();
       });
     });
 
     this.container.addEventListener('mouseup', () => {
-      keyOrder.forEach((keyCode) => this.keyElements[keyCode].classList.remove('keyboard__btn--active'));
+      if (!this.mouseKey) {
+        return;
+      }
+      this.keyboardState[this.mouseKey].pressed = false;
+      this.mouseKey = null;
+      this.update();
     });
 
     // Keyboard events
@@ -107,14 +146,17 @@ export class Keyboard {
         return;
       }
 
-      this.handleKeyEvent(e);
+      this.keyboardState[e.code].pressed = true;
+      this.handleKeyDownEvent(e);
+      this.update();
     });
 
     window.addEventListener('keyup', (e) => {
       if (!keyOrder.includes(e.code)) {
         return;
       }
-      this.keyElements[e.code].classList.remove('keyboard__btn--active');
+      this.keyboardState[e.code].pressed = false;
+      this.update();
     });
   }
 }
