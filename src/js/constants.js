@@ -1,4 +1,4 @@
-export const keyOrder = [
+export const KEY_ORDER = [
   'Backquote',
   'Digit1',
   'Digit2',
@@ -66,7 +66,7 @@ export const keyOrder = [
   'ControlRight',
 ];
 
-export const keySizes = {
+export const KEY_SIZES = {
   Backquote: 2,
   Digit1: 2,
   Digit2: 2,
@@ -134,7 +134,7 @@ export const keySizes = {
   ControlRight: 2,
 };
 
-export const validKeys = [
+export const VALID_KEYS = [
   'Enter',
   'Backspace',
   'Delete',
@@ -156,7 +156,7 @@ export const validKeys = [
   'Space',
 ];
 
-export const modifiers = [
+export const MODIFIERS = [
   'ShiftLeft',
   'ShiftRight',
   'ControlLeft',

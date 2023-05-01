@@ -1,5 +1,5 @@
 import {
-  keyOrder, keySizes, validKeys, modifiers,
+  KEY_ORDER, KEY_SIZES, VALID_KEYS, MODIFIERS,
 } from './constants.js';
 import { layout as enLayout } from './layouts/en.js';
 import { layout as ruLayout } from './layouts/ru.js';
@@ -11,7 +11,7 @@ export class Keyboard {
   constructor(container) {
     this.container = container;
     this.keyboard = navigator.keyboard;
-    this.keyboardState = keyOrder.reduce((obj, curr) => (
+    this.keyboardState = KEY_ORDER.reduce((obj, curr) => (
       { ...obj, [curr]: { pressed: false } }
     ), {});
     this.cursorPos = 0;
@@ -44,8 +44,8 @@ export class Keyboard {
     const keyList = document.createElement('ul');
     keyList.classList.add('keyboard__list');
 
-    keyOrder.forEach((keyCode) => {
-      const size = keySizes[keyCode];
+    KEY_ORDER.forEach((keyCode) => {
+      const size = KEY_SIZES[keyCode];
 
       const keyEl = document.createElement('li');
       keyEl.classList.add('keyboard__item');
@@ -83,7 +83,7 @@ export class Keyboard {
   }
 
   getKeyValue(keyCode) {
-    if (modifiers.includes(keyCode)) {
+    if (MODIFIERS.includes(keyCode)) {
       return '';
     }
 
@@ -107,7 +107,7 @@ export class Keyboard {
   }
 
   update() {
-    keyOrder.forEach((keyCode) => {
+    KEY_ORDER.forEach((keyCode) => {
       const isPressed = this.keyboardState[keyCode].pressed;
       this.keyElements[keyCode].classList[isPressed ? 'add' : 'remove']('keyboard__btn--active');
       this.keyElements[keyCode].textContent = this.getKeyName(keyCode);
@@ -136,7 +136,7 @@ export class Keyboard {
         localStorage.setItem('kbLayout', 'en');
       }
     }
-    if (isTrusted && validKeys.includes(code)) {
+    if (isTrusted && VALID_KEYS.includes(code)) {
       return;
     }
 
@@ -203,10 +203,10 @@ export class Keyboard {
     window.addEventListener('keydown', (e) => {
       this.cursorPos = this.output.selectionEnd;
 
-      if (!validKeys.includes(e.code)) {
+      if (!VALID_KEYS.includes(e.code)) {
         e.preventDefault();
       }
-      if (!keyOrder.includes(e.code)) {
+      if (!KEY_ORDER.includes(e.code)) {
         return;
       }
 
@@ -216,7 +216,7 @@ export class Keyboard {
     });
 
     window.addEventListener('keyup', (e) => {
-      if (!keyOrder.includes(e.code)) {
+      if (!KEY_ORDER.includes(e.code)) {
         return;
       }
       this.keyboardState[e.code].pressed = false;
