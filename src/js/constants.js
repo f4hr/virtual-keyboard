@@ -134,42 +134,12 @@ export const keySizes = {
   ControlRight: 2,
 };
 
-export const wordKeys = [
-  'KeyQ',
-  'KeyW',
-  'KeyE',
-  'KeyR',
-  'KeyT',
-  'KeyY',
-  'KeyU',
-  'KeyI',
-  'KeyO',
-  'KeyP',
-  'KeyA',
-  'KeyS',
-  'KeyD',
-  'KeyF',
-  'KeyG',
-  'KeyH',
-  'KeyJ',
-  'KeyK',
-  'KeyL',
-  'KeyZ',
-  'KeyX',
-  'KeyC',
-  'KeyV',
-  'KeyB',
-  'KeyN',
-  'KeyM',
-];
-
 export const validKeys = [
   'Enter',
   'Backspace',
   'Delete',
   'End',
   'Home',
-  'Tab',
   'OSLeft',
   'OSRight',
   'CapsLock',
@@ -183,12 +153,5 @@ export const validKeys = [
   'ArrowUp',
   'ArrowRight',
   'ArrowDown',
-];
-
-export const modifiers = [
-  'ShiftLeft',
-  'ShiftRight',
-  'AltLeft',
-  'AltRight',
-  'CapsLock',
+  'Space',
 ];

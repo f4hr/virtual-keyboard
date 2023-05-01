@@ -1,9 +1,10 @@
-import {
-  keyOrder, keySizes, wordKeys, validKeys,
-} from './constants.js';
-import { enLayout } from './layouts/en.js';
+import { keyOrder, keySizes, validKeys } from './constants.js';
+import { layout as enLayout } from './layouts/en.js';
+import { layout as ruLayout } from './layouts/ru.js';
 
 const CAPS_CODE = 'CapsLock';
+const TAB_CODE = 'Tab';
+const LAYOUT_CHANGE_SHORTCUT = ['ControlLeft', 'AltLeft'];
 
 export class Keyboard {
   constructor(container) {
@@ -63,7 +64,7 @@ export class Keyboard {
   getKeyValue(keyCode) {
     const isShift = this.keyboardState.ShiftLeft.pressed || this.keyboardState.ShiftRight.pressed;
 
-    if (!wordKeys.includes(keyCode)) {
+    if (!this.layout[keyCode].isLetter) {
       const value = this.layout[keyCode][isShift ? 'alt' : 'default'];
       return value || this.layout[keyCode].default;
     }
@@ -85,13 +86,19 @@ export class Keyboard {
     if (e.code === CAPS_CODE) {
       this.isCaps = !this.isCaps;
     }
+    // Change layout
+    if (LAYOUT_CHANGE_SHORTCUT.every((key) => this.keyboardState[key].pressed)) {
+      this.layout = (this.layout === enLayout) ? ruLayout : enLayout;
+    }
     if (validKeys.includes(e.code)) {
       return;
     }
 
+    const keyValue = (e.code === TAB_CODE) ? '\t' : this.getKeyValue(e.code);
+
     this.cursorPos = this.output.selectionEnd;
     this.output.setRangeText(
-      this.getKeyValue(e.code),
+      keyValue,
       this.cursorPos,
       this.cursorPos,
       'end',
