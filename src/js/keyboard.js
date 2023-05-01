@@ -1,9 +1,10 @@
-import { keyOrder, keySizes, validKeys } from './constants.js';
+import {
+  keyOrder, keySizes, validKeys, modifiers,
+} from './constants.js';
 import { layout as enLayout } from './layouts/en.js';
 import { layout as ruLayout } from './layouts/ru.js';
 
 const CAPS_CODE = 'CapsLock';
-const TAB_CODE = 'Tab';
 const LAYOUT_CHANGE_SHORTCUT = ['ControlLeft', 'AltLeft'];
 
 export class Keyboard {
@@ -69,7 +70,7 @@ export class Keyboard {
     output.focus();
   }
 
-  getKeyValue(keyCode) {
+  getKeyName(keyCode) {
     const isShift = this.keyboardState.ShiftLeft.pressed || this.keyboardState.ShiftRight.pressed;
 
     if (!this.layout[keyCode].isLetter) {
@@ -81,18 +82,49 @@ export class Keyboard {
     return value || this.layout[keyCode].default;
   }
 
+  getKeyValue(keyCode) {
+    if (modifiers.includes(keyCode)) {
+      return '';
+    }
+
+    let value;
+    switch (keyCode) {
+      case 'Tab':
+        value = '\t';
+        break;
+      case 'Space':
+        value = ' ';
+        break;
+      case 'Enter':
+        value = '\n';
+        break;
+      default:
+        value = this.getKeyName(keyCode);
+        break;
+    }
+
+    return value;
+  }
+
   update() {
     keyOrder.forEach((keyCode) => {
       const isPressed = this.keyboardState[keyCode].pressed;
       this.keyElements[keyCode].classList[isPressed ? 'add' : 'remove']('keyboard__btn--active');
-      this.keyElements[keyCode].textContent = this.getKeyValue(keyCode);
+      this.keyElements[keyCode].textContent = this.getKeyName(keyCode);
     });
     this.keyElements[CAPS_CODE].classList[this.isCaps ? 'add' : 'remove']('keyboard__btn--active');
   }
 
   handleKeyDownEvent(e) {
-    if (e.code === CAPS_CODE) {
+    this.output.focus();
+
+    const { code, isTrusted } = e;
+
+    if (code === CAPS_CODE) {
       this.isCaps = !this.isCaps;
+    }
+    if (code === 'Tab') {
+      e.preventDefault();
     }
     // Change layout
     if (LAYOUT_CHANGE_SHORTCUT.every((key) => this.keyboardState[key].pressed)) {
@@ -104,17 +136,28 @@ export class Keyboard {
         localStorage.setItem('kbLayout', 'en');
       }
     }
-    if (validKeys.includes(e.code)) {
+    if (isTrusted && validKeys.includes(code)) {
       return;
     }
 
-    const keyValue = (e.code === TAB_CODE) ? '\t' : this.getKeyValue(e.code);
+    let textStart = this.cursorPos;
+    let textEnd = this.cursorPos;
+    switch (code) {
+      case 'Backspace':
+        textStart -= 1;
+        break;
+      case 'Delete':
+        textEnd += 1;
+        break;
+      default:
+        break;
+    }
 
     this.cursorPos = this.output.selectionEnd;
     this.output.setRangeText(
-      keyValue,
-      this.cursorPos,
-      this.cursorPos,
+      this.getKeyValue(e.code),
+      textStart,
+      textEnd,
       'end',
     );
   }
@@ -122,8 +165,6 @@ export class Keyboard {
   bindEvents() {
     // Mouse events
     this.container.addEventListener('mousedown', (e) => {
-      this.cursorPos = this.output.selectionEnd;
-
       const { code } = e.target.dataset;
       if (!code) {
         return;
@@ -131,33 +172,35 @@ export class Keyboard {
 
       e.preventDefault();
 
-      this.keyboard.getLayoutMap().then((keyboardLayoutMap) => {
-        this.output.focus();
+      this.cursorPos = this.output.selectionEnd;
 
-        const keyboardEvent = new KeyboardEvent('keydown', {
-          key: keyboardLayoutMap.get(code),
-          code,
-        });
-
-        this.keyboardState[code].pressed = true;
-        this.mouseKey = code;
-        this.handleKeyDownEvent(keyboardEvent);
-        this.update();
+      const keyboardEvent = new KeyboardEvent('keydown', {
+        key: this.getKeyName(code),
+        code,
+        bubbles: true,
+        cancelable: true,
       });
+      window.dispatchEvent(keyboardEvent);
+      this.mouseKey = code;
     });
 
     this.container.addEventListener('mouseup', () => {
       if (!this.mouseKey) {
         return;
       }
-      this.keyboardState[this.mouseKey].pressed = false;
+
+      const keyboardEvent = new KeyboardEvent('keyup', {
+        key: this.getKeyName(this.mouseKey),
+        code: this.mouseKey,
+        bubbles: true,
+        cancelable: true,
+      });
+      window.dispatchEvent(keyboardEvent);
       this.mouseKey = null;
-      this.update();
     });
 
     // Keyboard events
     window.addEventListener('keydown', (e) => {
-      this.output.focus();
       this.cursorPos = this.output.selectionEnd;
 
       if (!validKeys.includes(e.code)) {

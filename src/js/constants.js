@@ -155,3 +155,17 @@ export const validKeys = [
   'ArrowDown',
   'Space',
 ];
+
+export const modifiers = [
+  'ShiftLeft',
+  'ShiftRight',
+  'ControlLeft',
+  'ControlRight',
+  'AltLeft',
+  'AltRight',
+  'OSLeft',
+  'OSRight',
+  'CapsLock',
+  'Backspace',
+  'Delete',
+];
