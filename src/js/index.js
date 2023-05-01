@@ -10,10 +10,16 @@ function buildBaseMarkup() {
   heading.classList.add('page-title');
   heading.textContent = 'RSS Virtual Keyboard';
 
+  const description = document.createElement('div');
+  description.classList.add('page-description');
+  description.innerHTML = `<p>This keyboard was made on Windows system.</p>
+    <p>To change keyboard layout press left <span class="kbd">Ctrl</span>+<span class="kbd">Alt</span>.</p>`;
+
   const keyboardContainer = document.createElement('div');
   keyboardContainer.id = 'keyboard';
 
   container.append(heading);
+  container.append(description);
   container.append(keyboardContainer);
   document.body.prepend(container);
 
