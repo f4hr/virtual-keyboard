@@ -274,6 +274,10 @@ export const layout = {
     isLetter: false,
     default: 'Win',
   },
+  MetaLeft: {
+    isLetter: false,
+    default: 'Win',
+  },
   AltLeft: {
     isLetter: false,
     default: 'Alt',
@@ -287,6 +291,10 @@ export const layout = {
     default: 'Alt',
   },
   OSRight: {
+    isLetter: false,
+    default: 'Win',
+  },
+  MetaRight: {
     isLetter: false,
     default: 'Win',
   },

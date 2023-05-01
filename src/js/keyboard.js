@@ -1,5 +1,5 @@
 import {
-  KEY_ORDER, KEY_SIZES, VALID_KEYS, MODIFIERS,
+  KEY_ORDER, KEY_SIZES, CONTROL_KEYS, MODIFIERS, VALID_KEYS,
 } from './constants.js';
 import { layout as enLayout } from './layouts/en.js';
 import { layout as ruLayout } from './layouts/ru.js';
@@ -136,7 +136,7 @@ export class Keyboard {
         localStorage.setItem('kbLayout', 'en');
       }
     }
-    if (isTrusted && VALID_KEYS.includes(code)) {
+    if (isTrusted && CONTROL_KEYS.includes(code)) {
       return;
     }
 
@@ -201,25 +201,41 @@ export class Keyboard {
 
     // Keyboard events
     window.addEventListener('keydown', (e) => {
+      let { code } = e;
       this.cursorPos = this.output.selectionEnd;
 
-      if (!VALID_KEYS.includes(e.code)) {
+      if (!CONTROL_KEYS.includes(code)) {
         e.preventDefault();
       }
-      if (!KEY_ORDER.includes(e.code)) {
+      if (!VALID_KEYS.includes(code)) {
         return;
       }
+      // Firefox Meta key fix
+      if (code === 'OSLeft') {
+        code = 'MetaLeft';
+      }
+      if (code === 'OSRight') {
+        code = 'MetaRight';
+      }
 
-      this.keyboardState[e.code].pressed = true;
+      this.keyboardState[code].pressed = true;
       this.handleKeyDownEvent(e);
       this.update();
     });
 
     window.addEventListener('keyup', (e) => {
-      if (!KEY_ORDER.includes(e.code)) {
+      let { code } = e;
+      if (!VALID_KEYS.includes(code)) {
         return;
       }
-      this.keyboardState[e.code].pressed = false;
+      // Firefox Meta key fix
+      if (code === 'OSLeft') {
+        code = 'MetaLeft';
+      }
+      if (code === 'OSRight') {
+        code = 'MetaRight';
+      }
+      this.keyboardState[code].pressed = false;
       this.update();
     });
   }
