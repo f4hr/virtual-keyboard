@@ -20,8 +20,16 @@ export class Keyboard {
   }
 
   init() {
+    this.setInitialState();
     this.buildMarkup();
     this.bindEvents();
+  }
+
+  setInitialState() {
+    const layout = localStorage.getItem('kbLayout') || 'en';
+
+    this.layout = (layout === 'en') ? enLayout : ruLayout;
+    localStorage.setItem('kbLayout', layout);
   }
 
   buildMarkup() {
@@ -88,7 +96,13 @@ export class Keyboard {
     }
     // Change layout
     if (LAYOUT_CHANGE_SHORTCUT.every((key) => this.keyboardState[key].pressed)) {
-      this.layout = (this.layout === enLayout) ? ruLayout : enLayout;
+      if (this.layout === enLayout) {
+        this.layout = ruLayout;
+        localStorage.setItem('kbLayout', 'ru');
+      } else {
+        this.layout = enLayout;
+        localStorage.setItem('kbLayout', 'en');
+      }
     }
     if (validKeys.includes(e.code)) {
       return;
